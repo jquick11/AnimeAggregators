@@ -1,15 +1,15 @@
 def get_ghibli(conn):
     
-    import os
-    import spotipy
-    from spotipy.oauth2 import SpotifyClientCredentials
-    import json
-    import sqlite3
+  import os
+  import spotipy
+  from spotipy.oauth2 import SpotifyClientCredentials
+  import json
+  import sqlite3
     
     #SPOTIPY_CLIENT_ID= "a253f05c08a14547bf7a270fc76c9f99"
     #SPOTIPY_CLIENT_SECRET='612f41bed1804679ac80b23870ef3264'
     
-    spotify = spotipy.Spotify(
+  spotify = spotipy.Spotify(
       client_credentials_manager=SpotifyClientCredentials())
     
     # Artist name
@@ -24,32 +24,32 @@ def get_ghibli(conn):
     #                          type="artist",
     #                          offset=api_offset,
     #                          limit=api_limit)
-    
+
     #print(results)
     #res = json.dumps(results)
     #print(json.dumps(results,indent=4))
     # print(results.keys())
     # tracks = results['tracks']
     #print(tracks.keys())
-    '''
+  '''
     BEFORE LOOP:
     Connect to db
     Create a cursor
     Drop old tables
     Create new table with updated definition
     
-    '''
+  '''
     #Connect to db
     #conn = sqlite3.connect(db_name)
     #Create a cursor
-    cur = conn.cursor()
+  cur = conn.cursor()
     
     #Drop old tables
-    cur.execute('DROP TABLE IF EXISTS ghibli_tracks')
+  cur.execute('DROP TABLE IF EXISTS ghibli_tracks')
     
     # Create the new table
-    sql = """
-    CREATE TABLE ghibli_tracks (
+  sql = """
+  CREATE TABLE ghibli_tracks (
         album_name   TEXT,
         id           TEXT PRIMARY KEY,
         popularity   INTEGER,
@@ -58,22 +58,22 @@ def get_ghibli(conn):
         genre        TEXT
     )
     """
-    cur.execute(sql)
+  cur.execute(sql)
     
-    api_limit = 25
-    api_offset = 0
+  api_limit = 25
+  api_offset = 0
     
     # Within a loop...
-    while True:
+  while True:
     
       # Execute the API search
-      results = spotify.search('Ghibli',
+    results = spotify.search('Ghibli',
                                offset=api_offset,
                                limit=api_limit,
                                type="track")
     
       # Process the results -- saving to the DB
-      for track in results['tracks']['items']:
+    for track in results['tracks']['items']:
     
         # Get the specific info from the API results
         album_name = track['album']['name']
@@ -100,18 +100,18 @@ def get_ghibli(conn):
         sql = "INSERT OR IGNORE INTO ghibli_tracks (album_name, id, popularity, release_date, composer, genre  ) VALUES (?,?,?,?,?,?)"
         print(sql, album_name, id, popularity, release_date, composer, genre)
         cur.execute(sql, (album_name, id, popularity, release_date, composer, genre))
-      conn.commit()
+    conn.commit()
     
       # Check whether 100 records are in the table.
-      res = cur.execute("SELECT COUNT(*) FROM ghibli_tracks")
-      record_count = cur.fetchone()[0]
-      if record_count > 100:
-        print(f"{record_count} records created.")
-        break
-      else:
+    res = cur.execute("SELECT COUNT(*) FROM ghibli_tracks")
+    record_count = cur.fetchone()[0]
+    if record_count > 100:
+      print(f"{record_count} records created.")
+      break
+    else:
     
         # If not, increase the offset and loop/search again...
-        api_offset += api_limit
+      api_offset += api_limit
     '''
     
     

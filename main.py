@@ -1,4 +1,5 @@
 import sqlite3
+import animeList
 
 # Have an import for each student's function
 from anime_spotify import *
@@ -17,3 +18,5 @@ get_ghibli(conn)
 
 # Call any other functions for calculations, graphs, etc.
 make_ghibli_graph()
+
+
